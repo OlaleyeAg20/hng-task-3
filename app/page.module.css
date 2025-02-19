@@ -40,6 +40,8 @@
   height: 80%;
   overflow: auto;
   border-radius: 1rem;
+  width: 100%;
+  max-width: 720px;
 }
 
 
@@ -47,11 +49,19 @@
   padding: 1rem 1.2rem;
   text-wrap: wrap;
   background: var(--gray-alpha-100);
-  width: 40%;
-  max-width: 1200px;
-  min-width: 300px;
-  border-radius: 1rem;
+  border-radius: .25rem;
   line-height: 150%;
+  position: relative;
+  max-width: 320px;
+}
+
+.chatBox:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -9px;
+  border: 10px solid transparent;
+  border-top: 10px solid #333;
 }
 
 
@@ -76,6 +86,11 @@
 
 .inputContainer textarea:focus{
   outline: none;
+}
+
+.inputContainer:focus-within{
+  outline: 1px solid;
+  outline-offset: 2px;
 }
 
 .btnContainer{
