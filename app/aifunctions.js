@@ -23,7 +23,7 @@ async function detectLanguage() {
     return detector;
 }
 
-
+// Translation function
 async function translateText(text, originalLanguage, targetLanguage) {
   const translatorCapabilities = await self.ai.translator.capabilities();
   const languagePairAvailable = await translatorCapabilities.languagePairAvailable(originalLanguage, targetLanguage);
@@ -41,8 +41,6 @@ async function translateText(text, originalLanguage, targetLanguage) {
       sourceLanguage: originalLanguage,
       targetLanguage,
     });
-
-    console.log(text)
 
     translatedText = await translator.translate(text);
 
@@ -66,6 +64,33 @@ async function translateText(text, originalLanguage, targetLanguage) {
   return translatedText;
 }
 
-export { detectLanguage, translateText };
-
 // Summarization
+async function summarize(longText){
+
+  const available = (await self.ai.summarizer.capabilities()).available;
+  let summarizer;
+  
+if (available === 'no') {
+  alert('The summarizer API is not available or not supported on your device.');
+  return;
+}
+if (available === 'readily') {
+  // The Summarizer API can be used immediately .
+  summarizer = await self.ai.summarizer.create();
+} else {
+  // The Summarizer API can be used after the model is downloaded.
+  summarizer = await self.ai.summarizer.create(options);
+  summarizer.addEventListener('downloadprogress', (e) => {
+    console.log(e.loaded, e.total);
+  });
+  await summarizer.ready;
+}
+
+const summary = await summarizer.summarize(longText, {
+  context: 'This article is intended for a tech-savvy audience.',
+});
+
+return summary;
+}
+
+export { detectLanguage, translateText, summarize };

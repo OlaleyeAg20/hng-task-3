@@ -1,16 +1,13 @@
 import styles from "./page.module.css";
 import { CharacterContext } from "./page";
 import { useContext } from "react";
-import { translateText } from "./aifunctions";
+import { translateText, summarize } from "./aifunctions";
 // import { useEffect } from "react";
 
 const Chatbox = ({from, language, children, index}) => {
 
   const character = useContext(CharacterContext)
 
-  // useEffect(() => {
-  //   console.log( character.chats[0])
-  // }, [])
 
   return (
     <div style={from === 'user' ? {alignSelf: 'flex-end', background: '#333', color: '#f2f2f2'} : null} className={from === 'user' ? styles.chatBox : styles.chatBoxFromAI}>
@@ -54,7 +51,20 @@ const Chatbox = ({from, language, children, index}) => {
           }}>Translate</button>
           {
             character.characterCount >= 150 ?
-            <button>Summerize</button> : null
+            <button value={index} onClick={(e) => {
+              character.setLoading(true)                
+              summarize(character.chats[e.target.value].message)
+                .then(res => {
+                  if(res){
+                    character.setChats([...character.chats, { from: "ai", message: res,}]);
+                  }
+                  character.setLoading(false)
+                })
+                .catch(error => {
+                  alert(error)
+                  character.setLoading(false)
+                })
+            }}>Summerize</button> : null
           }
         </div> : null}
     </div>
