@@ -95,8 +95,8 @@ export default function Home() {
           <div className={styles.btnContainer}>
             <button
               onClick={() => {
-                setLoading(true);
                 if (input) {
+                  setLoading(true);
                   detectLanguage(input)
                     .then((detector) => {
                       if (detector) {
