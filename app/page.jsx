@@ -22,6 +22,13 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const otMeta = document.createElement('meta');
+    otMeta.httpEquiv = 'origin-trial';
+    otMeta.content = process.env.NEXT_PUBLIC_CHROME_TOKEN;
+    document.head.append(otMeta);
+  }, [])
+
+  useEffect(() => {
     scrollToBottom()
   }, [chats])
 
