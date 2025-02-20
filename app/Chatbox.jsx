@@ -1,25 +1,37 @@
 import styles from "./page.module.css";
 import { CharacterContext } from "./page";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
+import { translateText } from "./aifunctions";
+// import { useEffect } from "react";
 
-const Chatbox = ({from, language, children}) => {
+const Chatbox = ({from, language, children, index}) => {
 
-  const characterLength = useContext(CharacterContext)
+  const character = useContext(CharacterContext)
+
+  // useEffect(() => {
+  //   console.log( character.chats[0])
+  // }, [])
 
   return (
-    <div style={from === 'user' ? {alignSelf: 'flex-end', background: '#333', color: '#f2f2f2'} : null} className={styles.chatBox}>
+    <div style={from === 'user' ? {alignSelf: 'flex-end', background: '#333', color: '#f2f2f2'} : null} className={from === 'user' ? styles.chatBox : styles.chatBoxFromAI}>
         <p>
             {children}
+            {from === 'user' ?
             <span style={{
                 fontSize: '0.7rem',
                 display: 'block',
                 textAlign: 'right',
                 marginTop: '0.5rem',
                 color: '#ccc'
-            }}>Language detected: {language === 'en' ? 'English' : language}</span>
+            }}>Language detected: {language === 'en' ? 'English' : language}</span> : null
+          }
         </p>
-        <div className='chatBtnContainer'>
-          <select name="language" id="">
+        {
+        from === 'user' ?
+          <div className='chatBtnContainer'>
+          <select name="language" value={character.targetLanguage} onChange={e => {
+          character.setTargetLanguage(e.target.value)
+        }}>
             <option value="en">English</option>
             <option value="pt">Portuguese</option>
             <option value="es">Spanish</option>
@@ -27,12 +39,24 @@ const Chatbox = ({from, language, children}) => {
             <option value="tr">Turkish</option>
             <option value="fr">French</option>
           </select>
-          <button>Translate</button>
+          <button value={index} onClick={(e) => {
+            character.setLoading(true)
+              translateText(character.chats[e.target.value].message, language, character.targetLanguage)
+                .then(res => {
+                  character.setChats([...character.chats, { from: "ai", message: res,}]);
+                  character.setLoading(false)
+                })
+                .catch(error => {
+                  alert(error)
+                  character.setLoading(false)
+                })
+                
+          }}>Translate</button>
           {
-            characterLength.characterCount >= 150 ?
+            character.characterCount >= 150 ?
             <button>Summerize</button> : null
           }
-        </div>
+        </div> : null}
     </div>
   )
 }

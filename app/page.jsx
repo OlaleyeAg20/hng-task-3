@@ -11,8 +11,11 @@ const CharacterContext = createContext()
 export default function Home() {
   const [chats, setChats] = useState([]);
   const [input, setInput] = useState("");
-  const [characterCount, setCharacterCount] = useState(0)
-  // const [loading, setLoading] = useState(false);
+  const [previousInput, setPreviousInput] = useState("")
+  const [characterCount, setCharacterCount] = useState(0);
+  const [targetLanguage, setTargetLanguage] = useState('ru');
+  const [sourceLanguage, setSourceLanguage] = useState('');
+  const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -33,20 +36,27 @@ export default function Home() {
   }, [chats])
 
   return (
-    <CharacterContext.Provider value={{characterCount}}>
+    <CharacterContext.Provider value={{characterCount, targetLanguage, setTargetLanguage, sourceLanguage, setSourceLanguage, previousInput, setPreviousInput, chats, setChats, loading, setLoading}}>
     <main className={styles.page}>
       <header>
         <h1>🤖 AYSCRIPT AI 🤖</h1>
       </header>
       <section className={styles.chatContainer} ref={scrollRef}>
-        {chats.map((chat, index) => (
-          <Chatbox key={index} from={chat.from} language={chat.language}>
+        { loading === false ?
+        chats.map((chat, index) => (
+          <Chatbox key={index} index={index} from={chat.from} language={chat.language}>
             {chat.message}
           </Chatbox>
-        ))}
+        )) : [...chats.map((chat, index) => (
+          <Chatbox key={index} index={index} from={chat.from} language={chat.language}>
+            {chat.message}
+          </Chatbox>
+        )), <div key='loading' className={styles.chatBoxFromAI}>Loading please wait...</div>]
+        }
       </section>
       <section className={styles.inputContainer}>
         <textarea name="input" id="input" onChange={(e) => {
+          setPreviousInput(e.target.value)
           setInput(e.target.value)
           }} 
           value={input}>
@@ -55,15 +65,25 @@ export default function Home() {
         <div className={styles.btnContainer}>
           <button
             onClick={() => {
-              
-              detectLanguage(input).then((detector) => {
+              setLoading(true)
+              detectLanguage(input)
+              .then((detector) => {
                 if (detector) {
                   detector.detect(input).then((result) => {
                     setCharacterCount(input.length)
                     setChats([...chats, { from: "user", message: input, language: result[0].detectedLanguage }]);
-                    scrollTo(0,0)
+                    setSourceLanguage(result[0].detectedLanguage)
                   });
+                } else {
+                  alert('Language detector not available!')
                 }
+
+                setLoading(false)
+
+              })
+              .catch(() => {
+                alert("An error occured it seems the chrome inbuilt AI is not available on your chrome or your device does not support it!")
+                setLoading(false)
               });
               setInput("");
             }}

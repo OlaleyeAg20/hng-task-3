@@ -23,6 +23,49 @@ async function detectLanguage() {
     return detector;
 }
 
-export { detectLanguage };
+
+async function translateText(text, originalLanguage, targetLanguage) {
+  const translatorCapabilities = await self.ai.translator.capabilities();
+  const languagePairAvailable = await translatorCapabilities.languagePairAvailable(originalLanguage, targetLanguage);
+
+
+  let translatedText;
+
+  if(languagePairAvailable === 'no'){
+
+    translatedText = 'Language pair not available';
+
+  } else if(languagePairAvailable === 'readily'){
+
+    const translator = await self.ai.translator.create({
+      sourceLanguage: originalLanguage,
+      targetLanguage,
+    });
+
+    console.log(text)
+
+    translatedText = await translator.translate(text);
+
+  } else if(languagePairAvailable === 'after-download'){
+    const translator = await self.ai.translator.create({
+      sourceLanguage: originalLanguage,
+      targetLanguage,
+      monitor(m) {
+        m.addEventListener('downloadprogress', (e) => {
+          console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
+        });
+      }, // monitoring download progress.
+    });
+
+    await translator.ready;
+    translatedText = await translator.translate(text);
+
+
+  }
+
+  return translatedText;
+}
+
+export { detectLanguage, translateText };
 
 // Summarization

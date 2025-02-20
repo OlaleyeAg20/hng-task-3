@@ -45,7 +45,7 @@
 }
 
 
-.chatBox{
+.chatBox, .chatBoxFromAI{
   padding: 1rem 1.2rem;
   text-wrap: wrap;
   background: var(--gray-alpha-100);
@@ -63,6 +63,7 @@
   border: 10px solid transparent;
   border-top: 10px solid #333;
 }
+
 
 
 .inputContainer{
