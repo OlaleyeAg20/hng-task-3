@@ -59,3 +59,23 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-thumb-hover);
 }
+
+.chatBtnContainer button, .chatBtnContainer select{
+  padding: .5rem;
+  margin: .5rem;
+}
+
+.chatBtnContainer select{
+  width: 100px;
+}
+
+@media (max-width: 480px) {
+  .chatBtnContainer button, .chatBtnContainer select{
+    padding: .25rem;
+    margin: .25rem;
+    font-size: 10px;
+  }
+  .chatBtnContainer select{
+    width: 70px;
+  }
+}

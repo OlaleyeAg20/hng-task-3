@@ -14,9 +14,7 @@ async function detectLanguage() {
       // The language detector can be used after model download.
       detector = await self.ai.languageDetector.create({
         monitor(m) {
-          m.addEventListener('downloadprogress', (e) => {
-            console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
-          });
+          m.addEventListener('downloadprogress', (e) => {});
         },
       });
       await detector.ready;
