@@ -1,12 +1,16 @@
 import styles from "./page.module.css";
 import { CharacterContext } from "./page";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { translateText, summarize } from "./aifunctions";
 // import { useEffect } from "react";
 
 const Chatbox = ({from, language, children, index}) => {
 
   const character = useContext(CharacterContext)
+
+  useEffect(() => {
+    console.log(children.length)
+  }, [])
 
 
   return (
@@ -50,7 +54,7 @@ const Chatbox = ({from, language, children, index}) => {
                 
           }}>Translate</button>
           {
-            character.characterCount >= 150 ?
+            children.length >= 150 ?
             <button value={index} onClick={(e) => {
               character.setLoading(true)                
               summarize(character.chats[e.target.value].message)
