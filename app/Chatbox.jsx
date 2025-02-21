@@ -34,7 +34,7 @@ const Chatbox = forwardRef(({ from, language, children, index, indexedBy }, ref)
 
       {character.chats[indexedBy]?.message ? (
         <div className={styles.replyoverlay} onClick={scrollToMessage}>
-          <p>{character.chats[indexedBy]?.message}</p>
+          <p>{character.chats[indexedBy]?.message > 150 ? character.chats[indexedBy]?.message.slice(0, 150) + '...' : character.chats[indexedBy]?.message}</p>
         </div>
       ) : null}
       <p>
