@@ -118,6 +118,18 @@
   outline: 1px solid;
 }
 
+.replyoverlay{
+  background: var(--gray-alpha-200);
+  padding: .5rem;
+  border-radius: .25rem;
+  margin: 12px 0;
+  font-size: 12px;
+}
+
+.from{
+  font-size: 12px;
+}
+
 @media (hover: hover){
   .btnContainer button:hover{
     cursor: pointer;

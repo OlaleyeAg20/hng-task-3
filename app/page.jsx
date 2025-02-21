@@ -1,8 +1,7 @@
-// import Image from "next/image";
 "use client";
+import { useEffect, useRef, useState, createContext } from "react";
 import styles from "./page.module.css";
 import Chatbox from "./Chatbox";
-import { useEffect, useRef, useState, createContext } from "react";
 import { detectLanguage } from "./aifunctions";
 
 const CharacterContext = createContext();
@@ -16,6 +15,20 @@ export default function Home() {
   const [sourceLanguage, setSourceLanguage] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const refs = useRef([]);
+
+  const renderedOutput = chats.map((chat, index) => (
+    <Chatbox
+      key={index}
+      index={index}
+      from={chat.from}
+      language={chat.language}
+      indexedBy={chat.indexedBy}
+      ref={(el) => (refs.current[index] = el)}
+    >
+      {chat.message}
+    </Chatbox>
+  ));
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -48,6 +61,8 @@ export default function Home() {
         setChats,
         loading,
         setLoading,
+        renderedOutput,
+        refs,
       }}
     >
       <main className={styles.page}>
@@ -56,27 +71,9 @@ export default function Home() {
         </header>
         <section className={styles.chatContainer} ref={scrollRef}>
           {loading === false
-            ? chats.map((chat, index) => (
-                <Chatbox
-                  key={index}
-                  index={index}
-                  from={chat.from}
-                  language={chat.language}
-                >
-                  {chat.message}
-                </Chatbox>
-              ))
+            ? renderedOutput
             : [
-                ...chats.map((chat, index) => (
-                  <Chatbox
-                    key={index}
-                    index={index}
-                    from={chat.from}
-                    language={chat.language}
-                  >
-                    {chat.message}
-                  </Chatbox>
-                )),
+                ...renderedOutput,
                 <div key="loading" className={styles.chatBoxFromAI}>
                   Loading please wait...
                 </div>,
@@ -91,9 +88,16 @@ export default function Home() {
               setInput(e.target.value);
             }}
             value={input}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById("sendButton").click();
+              }
+            }}
           ></textarea>
           <div className={styles.btnContainer}>
             <button
+              id="sendButton"
               onClick={() => {
                 if (input) {
                   setLoading(true);
