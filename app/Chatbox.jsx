@@ -8,9 +8,6 @@ const Chatbox = ({from, language, children, index}) => {
 
   const character = useContext(CharacterContext)
 
-  useEffect(() => {
-    console.log(children.length)
-  }, [])
 
 
   return (
